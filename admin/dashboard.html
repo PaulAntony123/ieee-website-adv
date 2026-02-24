@@ -6,13 +6,21 @@
 <body>
 
 <h2>Welcome to IEEE VISAT Admin Dashboard</h2>
+  <h3>Add Event</h3>
+
+<input type="text" id="title" placeholder="Event Title"><br><br>
+<input type="text" id="date" placeholder="Event Date"><br><br>
+<textarea id="description" placeholder="Description"></textarea><br><br>
+<button id="addEventBtn">Add Event</button>
+
+<hr>
 <button id="logoutBtn">Logout</button>
 
 <script type="module">
 import { auth, db } from "./firebase.js";
 import { signOut, onAuthStateChanged } 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { doc, getDoc } 
+import { doc, getDoc, collection, addDoc } 
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 onAuthStateChanged(auth, async (user) => {
@@ -21,7 +29,6 @@ onAuthStateChanged(auth, async (user) => {
     return;
   }
 
-  // Get user role from Firestore
   const userDoc = await getDoc(doc(db, "users", user.uid));
 
   if (!userDoc.exists()) {
@@ -41,6 +48,34 @@ onAuthStateChanged(auth, async (user) => {
   }
 
   console.log("Admin access granted");
+
+  // ✅ Add Event only after admin confirmed
+  document.getElementById("addEventBtn").addEventListener("click", async () => {
+
+    const title = document.getElementById("title").value;
+    const date = document.getElementById("date").value;
+    const description = document.getElementById("description").value;
+
+    if (!title || !date) {
+      alert("Title and date required");
+      return;
+    }
+
+    await addDoc(collection(db, "events"), {
+      title: title,
+      date: date,
+      description: description,
+      approved: false,
+      createdAt: new Date()
+    });
+
+    alert("Event added successfully!");
+
+    // Clear inputs
+    document.getElementById("title").value = "";
+    document.getElementById("date").value = "";
+    document.getElementById("description").value = "";
+  });
 });
 
 document.getElementById("logoutBtn").addEventListener("click", async () => {

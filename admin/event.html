@@ -19,8 +19,6 @@ body{
     background:#070019;
     display:flex;
     color:#e5e7eb;
-    height:100vh;
-    overflow:hidden;
 }
 
 h1{
@@ -41,15 +39,6 @@ h1{
   margin-bottom:15px;
   color:#a855f7;
 }
-
-.form-card{
-    display:flex;
-    flex-direction:column;
-    overflow-y:auto;
-    height:100%;
-    padding-right:5px;
-}
-
 
 input, textarea{
   width:100%;
@@ -96,9 +85,6 @@ button{
 .main{
     flex:1;
     padding:40px;
-    display:flex;
-    flex-direction:column;
-    height:100vh;
 }
 
 .topbar{
@@ -117,10 +103,8 @@ button{
 
 .grid{
     display:grid;
-    grid-template-columns: 400px 1fr;
+    grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
     gap:25px;
-    flex:1;
-    overflow:hidden;
 }
 
 .card{
@@ -165,26 +149,7 @@ button{
     background:rgba(168,85,247,0.2);
     box-shadow:0 0 20px rgba(124,58,237,0.5);
 }
-.events-card{
-    display:flex;
-    flex-direction:column;
-    height:100%;
-}
 
-.events-scroll{
-    overflow-y:auto;
-    flex:1;
-    margin-top:15px;
-    padding-right:5px;
-}
-.events-scroll::-webkit-scrollbar {
-    width:6px;
-}
-
-.events-scroll::-webkit-scrollbar-thumb {
-    background:#7c3aed;
-    border-radius:10px;
-}
 </style>
 </head>
 
@@ -214,22 +179,21 @@ button{
 
     <div class="grid">
 
-        <div class="card form-card">
+        <div class="card">
             <h3>Add New Event</h3>
 
             <input type="text" id="title" placeholder="Event Title">
             <input type="date" id="date">
-            <input type="number" id="priority" placeholder="Display Order (1 = Top)">
             <textarea id="description" placeholder="Event Description"></textarea>
             <input type="text" id="registration" placeholder="Registration Link (optional)">
             <input type="file" id="imageFile">
             <button id="addEvent">Add Event</button>
         </div>
 
-        <div class="card events-card">
-    <h3>All Events</h3>
-    <div id="eventList" class="events-scroll"></div>
-</div>
+        <div class="card">
+            <h3>All Events</h3>
+            <div id="eventList"></div>
+        </div>
 
     </div>
 
@@ -245,13 +209,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import { 
+  getFirestore, 
   collection, 
   addDoc, 
   getDocs, 
   deleteDoc, 
-  doc,
-  query,
-  orderBy
+  doc 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 
@@ -269,12 +232,7 @@ const eventList = document.getElementById("eventList");
 
 async function loadEvents(){
   eventList.innerHTML = "";
-  const q = query(
-  collection(db,"events"),
-  orderBy("priority","asc")
-);
-
-const snapshot = await getDocs(q);
+  const snapshot = await getDocs(collection(db,"events"));
 
   snapshot.forEach(docSnap=>{
     const data = docSnap.data();
@@ -311,7 +269,6 @@ document.getElementById("addEvent").addEventListener("click", async ()=>{
 
   const title = document.getElementById("title").value;
   const date = document.getElementById("date").value;
-  const priority = parseInt(document.getElementById("priority").value) || 999;
   const description = document.getElementById("description").value;
   const registration = document.getElementById("registration").value;
   const file = document.getElementById("imageFile").files[0];
@@ -341,21 +298,19 @@ document.getElementById("addEvent").addEventListener("click", async ()=>{
 }
 
   await addDoc(collection(db,"events"),{
-  title,
-  date,
-  description,
-  registration,
-  image: imageURL,
-  priority,
-  createdAt: new Date()
-});
+    title,
+    date,
+    description,
+    registration,
+    image: imageURL,
+    createdAt: new Date()
+  });
 
   document.getElementById("title").value="";
   document.getElementById("date").value="";
   document.getElementById("description").value="";
   document.getElementById("registration").value="";
   document.getElementById("imageFile").value="";
-  document.getElementById("priority").value="";
 
   loadEvents();
 });

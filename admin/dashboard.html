@@ -213,32 +213,40 @@ body{
     </div>
 
 </div>
+<script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { 
   getAuth, 
-  signOut,
-  onAuthStateChanged 
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
+  apiKey: "AIzaSyBMYyLQAu50cUHuXpHrYartoL2hr2nLiMo",
+  authDomain: "ieee-visat-website.firebaseapp.com",
+  projectId: "ieee-visat-website",
+  storageBucket: "ieee-visat-website.firebasestorage.app",
+  messagingSenderId: "713892043284",
+  appId: "1:713892043284:web:97b92a656ca016d3712501"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 
+/* 🔒 Protect Dashboard */
 onAuthStateChanged(auth, (user) => {
   if (!user) {
     window.location.href = "login.html";
   }
 });
 
-document.querySelector("li:last-child").addEventListener("click", () => {
-  signOut(auth).then(() => {
-    window.location.href = "login.html";
-  });
+/* 🚪 Logout */
+document.querySelector(".sidebar ul li:last-child")
+  .addEventListener("click", () => {
+    signOut(auth).then(() => {
+      window.location.href = "login.html";
+    });
 });
+</script>
 </body>
 </html>

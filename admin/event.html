@@ -16,9 +16,9 @@
 }
 
 body{
-  background:#070019;
-  color:#e5e7eb;
-  padding:40px;
+    background:#070019;
+    display:flex;
+    color:#e5e7eb;
 }
 
 h1{
@@ -81,26 +81,123 @@ button{
   background:#ff4d6d;
   margin-top:10px;
 }
+/* ================= SIDEBAR ================= */
+.main{
+    flex:1;
+    padding:40px;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:40px;
+}
+
+.search{
+    background:rgba(124,58,237,0.08);
+    padding:10px 20px;
+    border-radius:30px;
+    border:1px solid rgba(168,85,247,0.2);
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
+    gap:25px;
+}
+
+.card{
+    background:rgba(124,58,237,0.08);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(168,85,247,0.2);
+    border-radius:20px;
+    padding:25px;
+    box-shadow:0 0 30px rgba(124,58,237,0.3);
+}
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+    width:260px;
+    height:100vh;
+    padding:30px 20px;
+    background:rgba(124,58,237,0.08);
+    backdrop-filter:blur(20px);
+    border-right:1px solid rgba(168,85,247,0.2);
+    box-shadow:0 0 40px rgba(124,58,237,0.3);
+}
+
+.sidebar h2{
+    margin-bottom:40px;
+    color:#a855f7;
+    font-weight:600;
+}
+
+.sidebar ul{
+    list-style:none;
+}
+
+.sidebar ul li{
+    padding:12px 15px;
+    margin:10px 0;
+    border-radius:12px;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.sidebar ul li:hover{
+    background:rgba(168,85,247,0.2);
+    box-shadow:0 0 20px rgba(124,58,237,0.5);
+}
+
 </style>
 </head>
 
 <body>
 
-<h1>Event Management</h1>
-
-<div class="form-box">
-  <h3>Add New Event</h3>
-
-  <input type="text" id="title" placeholder="Event Title">
-  <input type="date" id="date">
-  <textarea id="description" placeholder="Event Description"></textarea>
-  <input type="text" id="registration" placeholder="Registration Link (optional)">
-  <input type="file" id="imageFile">
-  <button id="addEvent">Add Event</button>
+<div class="sidebar">
+    <h2>IEEE SB</h2>
+    <ul>
+        <li>📊 Dashboard</li>
+        <li>📅 Events</li>
+        <li>🖼️ Gallery</li>
+        <li>👥 Team</li>
+        <li>📝 Reports</li>
+        <li>📩 Messages</li>
+        <li>📂 Resources</li>
+        <li>⚙️ Settings</li>
+        <li>🚪 Logout</li>
+    </ul>
 </div>
 
-<h3>All Events</h3>
-<div id="eventList"></div>
+<div class="main">
+
+    <div class="topbar">
+        <h1>Event Management</h1>
+        <div class="search">📅 Manage Events</div>
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <h3>Add New Event</h3>
+
+            <input type="text" id="title" placeholder="Event Title">
+            <input type="date" id="date">
+            <textarea id="description" placeholder="Event Description"></textarea>
+            <input type="text" id="registration" placeholder="Registration Link (optional)">
+            <input type="file" id="imageFile">
+            <button id="addEvent">Add Event</button>
+        </div>
+
+        <div class="card">
+            <h3>All Events</h3>
+            <div id="eventList"></div>
+        </div>
+
+    </div>
+
+</div>
 
 <script type="module">
 

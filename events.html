@@ -379,107 +379,70 @@ body.page-exit{
 
 
     
-<script>
-const CSV_URL =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vQ8LS6W5XKXnZlbAi_WTxLpZABpNxY9uj8t_c0Y82sybo0d-Q4HUZJVEum8KIeDlzDjcshd3LYWtt1m/pub?output=csv";
+<script type="module">
 
-/* Google Image CDN (same fix as Gallery) */
-function fixDriveLink(url){
-  if(!url) return "";
-  const id = url.match(/[-\w]{25,}/);
-  return id
-    ? `https://lh3.googleusercontent.com/d/${id[0]}=s1600`
-    : url;
-}
+import { auth, db } from "./admin/firebase.js";
 
-/* CSV parser */
-function parseCSV(text){
-  const rows = [];
-  let row = [], val = "", insideQuotes = false;
+import { 
+  collection, 
+  getDocs 
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-  for (let c of text) {
-    if (c === '"') insideQuotes = !insideQuotes;
-    else if (c === "," && !insideQuotes) {
-      row.push(val); val = "";
-    }
-    else if (c === "\n" && !insideQuotes) {
-      row.push(val); rows.push(row);
-      row = []; val = "";
-    }
-    else val += c;
-  }
-  row.push(val);
-  rows.push(row);
-  return rows;
-}
+const eventsContainer = document.getElementById("events");
+const status = document.getElementById("status");
 
-fetch(CSV_URL)
-  .then(res => res.text())
-  .then(text => {
-    const data = parseCSV(text).slice(1);
-    const events = document.getElementById("events");
-    const status = document.getElementById("status");
+async function loadEvents(){
+  eventsContainer.innerHTML = "";
+  status.innerText = "Loading events…";
 
-    events.innerHTML = "";
-    status.style.display = "none";
+  const snapshot = await getDocs(collection(db,"events"));
 
-    const today = new Date();
-    today.setHours(0,0,0,0);
+  const today = new Date();
+  today.setHours(0,0,0,0);
 
-    data.reverse().forEach(row => {
-      const title = row[0]?.trim();
-      const dateText = row[1]?.trim();
-      const desc = row[2]?.trim();
-      const poster = row[3]?.trim();
-      const reg = row[4]?.trim();
-      const approved = row[5]?.trim().toUpperCase();
+  let hasEvents = false;
 
-      if (!title || approved !== "YES") return;
+  snapshot.forEach(docSnap=>{
+    const data = docSnap.data();
 
-      let eventDate = new Date();
-if(dateText && dateText.includes("/")){
-  const [day, month, year] = dateText.split("/");
-  eventDate = new Date(year, month - 1, day);
-}
+    const eventDate = new Date(data.date);
+    const isUpcoming = eventDate >= today;
 
+    const card = document.createElement("div");
+    card.className = "event-card";
 
-      const isUpcoming = eventDate >= today;
+    card.innerHTML = `
+      <div class="event-status ${isUpcoming ? "event-upcoming" : "event-past"}">
+        ${isUpcoming ? "Upcoming" : "Past"}
+      </div>
 
-      const card = document.createElement("div");
-      card.className = "event-card";
+      ${data.image ? `<img src="${data.image}" alt="${data.title}">` : ""}
 
-      card.innerHTML = `
-        <div class="event-status ${isUpcoming ? "event-upcoming" : "event-past"}">
-          ${isUpcoming ? "Upcoming" : "Past"}
-        </div>
+      <div class="event-body">
+        <h3>${data.title}</h3>
+        <div class="event-date">${data.date}</div>
+        <p>${data.description || ""}</p>
+      </div>
 
-        ${poster ? `<img src="${fixDriveLink(poster)}" alt="${title}">` : ""}
+      ${isUpcoming && data.registration ? `
+        <div class="event-footer">
+          <a href="${data.registration}" target="_blank">Register</a>
+        </div>` : ""}
+    `;
 
-        <div class="event-body">
-         <h3>${title}</h3>
-         <p>${desc || ""}</p>
-        </div>
-
-
-        ${isUpcoming && reg ? `
-          <div class="event-footer">
-            <a href="${reg}" target="_blank" rel="noopener">Register</a>
-
-          </div>` : ""}
-      `;
-
-      events.appendChild(card);
-    });
-
-    if (!events.children.length) {
-      status.style.display = "block";
-      status.innerText = "No events available.";
-    }
-  })
-  .catch(() => {
-    document.getElementById("status").innerText =
-      "Failed to load events.";
+    eventsContainer.appendChild(card);
+    hasEvents = true;
   });
+
+  if(!hasEvents){
+    status.innerText = "No events available.";
+  } else {
+    status.style.display = "none";
+  }
+}
+
+loadEvents();
+
 </script>
 <script>
 const toggle = document.getElementById("menu-toggle");
@@ -500,4 +463,3 @@ document.querySelectorAll(".nav a").forEach(link => {
 
 </body>
 </html>
-

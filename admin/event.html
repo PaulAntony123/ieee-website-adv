@@ -159,14 +159,14 @@ button{
     <h2>IEEE SB</h2>
     <ul>
         <li onclick="window.location.href='dashboard.html'">📊 Dashboard</li>
-        <li onclick="window.location.href='event.html'">📅 Events</li>
+        <li>📅 Events</li>
         <li>🖼️ Gallery</li>
         <li>👥 Team</li>
         <li>📝 Reports</li>
         <li>📩 Messages</li>
         <li>📂 Resources</li>
         <li>⚙️ Settings</li>
-        <li>🚪 Logout</li>
+        <li id="logoutBtn">🚪 Logout</li>
     </ul>
 </div>
 
@@ -314,7 +314,20 @@ document.getElementById("addEvent").addEventListener("click", async ()=>{
 
   loadEvents();
 });
+import { signOut } from 
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+/* 🚪 Logout */
+document.getElementById("logoutBtn")
+  .addEventListener("click", () => {
+    signOut(auth)
+      .then(() => {
+        window.location.href = "login.html";
+      })
+      .catch((error) => {
+        console.error("Logout Error:", error);
+      });
+});
 </script>
 
 </body>

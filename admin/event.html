@@ -19,6 +19,8 @@ body{
     background:#070019;
     display:flex;
     color:#e5e7eb;
+    height:100vh;
+    overflow:hidden;
 }
 
 h1{
@@ -85,6 +87,9 @@ button{
 .main{
     flex:1;
     padding:40px;
+    display:flex;
+    flex-direction:column;
+    height:100vh;
 }
 
 .topbar{
@@ -103,8 +108,10 @@ button{
 
 .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
+    grid-template-columns: 400px 1fr;
     gap:25px;
+    flex:1;
+    overflow:hidden;
 }
 
 .card{
@@ -149,7 +156,26 @@ button{
     background:rgba(168,85,247,0.2);
     box-shadow:0 0 20px rgba(124,58,237,0.5);
 }
+.events-card{
+    display:flex;
+    flex-direction:column;
+    height:100%;
+}
 
+.events-scroll{
+    overflow-y:auto;
+    flex:1;
+    margin-top:15px;
+    padding-right:5px;
+}
+.events-scroll::-webkit-scrollbar {
+    width:6px;
+}
+
+.events-scroll::-webkit-scrollbar-thumb {
+    background:#7c3aed;
+    border-radius:10px;
+}
 </style>
 </head>
 
@@ -191,10 +217,10 @@ button{
             <button id="addEvent">Add Event</button>
         </div>
 
-        <div class="card">
-            <h3>All Events</h3>
-            <div id="eventList"></div>
-        </div>
+        <div class="card events-card">
+    <h3>All Events</h3>
+    <div id="eventList" class="events-scroll"></div>
+</div>
 
     </div>
 
@@ -320,6 +346,7 @@ document.getElementById("addEvent").addEventListener("click", async ()=>{
   document.getElementById("description").value="";
   document.getElementById("registration").value="";
   document.getElementById("imageFile").value="";
+  document.getElementById("priority").value="";
 
   loadEvents();
 });

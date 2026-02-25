@@ -184,6 +184,7 @@ button{
 
             <input type="text" id="title" placeholder="Event Title">
             <input type="date" id="date">
+            <input type="number" id="priority" placeholder="Display Order (1 = Top)">
             <textarea id="description" placeholder="Event Description"></textarea>
             <input type="text" id="registration" placeholder="Registration Link (optional)">
             <input type="file" id="imageFile">
@@ -209,12 +210,13 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import { 
-  getFirestore, 
   collection, 
   addDoc, 
   getDocs, 
   deleteDoc, 
-  doc 
+  doc,
+  query,
+  orderBy
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 
@@ -232,7 +234,12 @@ const eventList = document.getElementById("eventList");
 
 async function loadEvents(){
   eventList.innerHTML = "";
-  const snapshot = await getDocs(collection(db,"events"));
+  const q = query(
+  collection(db,"events"),
+  orderBy("priority","asc")
+);
+
+const snapshot = await getDocs(q);
 
   snapshot.forEach(docSnap=>{
     const data = docSnap.data();
@@ -269,6 +276,7 @@ document.getElementById("addEvent").addEventListener("click", async ()=>{
 
   const title = document.getElementById("title").value;
   const date = document.getElementById("date").value;
+  const priority = parseInt(document.getElementById("priority").value) || 999;
   const description = document.getElementById("description").value;
   const registration = document.getElementById("registration").value;
   const file = document.getElementById("imageFile").files[0];
@@ -298,13 +306,14 @@ document.getElementById("addEvent").addEventListener("click", async ()=>{
 }
 
   await addDoc(collection(db,"events"),{
-    title,
-    date,
-    description,
-    registration,
-    image: imageURL,
-    createdAt: new Date()
-  });
+  title,
+  date,
+  description,
+  registration,
+  image: imageURL,
+  priority,
+  createdAt: new Date()
+});
 
   document.getElementById("title").value="";
   document.getElementById("date").value="";

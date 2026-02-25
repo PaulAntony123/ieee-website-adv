@@ -19,6 +19,7 @@ body{
     background:#070019;
     display:flex;
     color:#e5e7eb;
+    overflow:hidden;   /* prevent whole page scroll */
 }
 
 h1{
@@ -103,8 +104,22 @@ button{
 
 .grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(350px,1fr));
+    grid-template-columns:400px 1fr;
     gap:25px;
+    height:calc(100vh - 120px);
+}
+
+/* LEFT CARD - STICKY */
+.grid .card:first-child{
+    position:sticky;
+    top:0;
+    height:fit-content;
+}
+
+/* RIGHT CARD - SCROLLABLE */
+.grid .card:last-child{
+    overflow-y:auto;
+    padding-right:10px;
 }
 
 .card{

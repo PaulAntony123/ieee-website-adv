@@ -124,7 +124,7 @@ button{
     <li>📩 Messages</li>
     <li>📂 Resources</li>
     <li>⚙️ Settings</li>
-    <li>🚪 Logout</li>
+    <li id="logoutBtn">🚪 Logout</li>
   </ul>
 </div>
 
@@ -238,7 +238,20 @@ document.getElementById("addImage")
 
     loadGallery();
 });
+import { signOut } from 
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+/* 🚪 Logout */
+document.getElementById("logoutBtn")
+  .addEventListener("click", () => {
+    signOut(auth)
+      .then(() => {
+        window.location.href = "login.html";
+      })
+      .catch((error) => {
+        console.error("Logout Error:", error);
+      });
+});
 </script>
 
 </body>

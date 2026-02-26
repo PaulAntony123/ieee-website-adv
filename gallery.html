@@ -404,81 +404,55 @@ body.page-exit{
 
     
 
-<script>
-const CSV_URL =
-"https://docs.google.com/spreadsheets/d/e/2PACX-1vSjJQD-v5dqmXrNCsvwpZ4c8N2XpqJ2LCPQG9lktj-gpw50iKf9VoUatAeZcEsNA8UWfaHqzxEreVtt/pub?output=csv";
+<script type="module">
 
-function fixDriveLink(url){
-  if(!url) return "";
-  const id = url.match(/[-\w]{25,}/);
-  return id
-    ? `https://lh3.googleusercontent.com/d/${id[0]}=s1600`
-    : url;
-}
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+const firebaseConfig = {
+  apiKey: "AIzaSyBMYyLQAu50cUHuXpHrYartoL2hr2nLiMo",
+  authDomain: "ieee-visat-website.firebaseapp.com",
+  projectId: "ieee-visat-website",
+};
 
-function parseCSV(text){
-  const rows = [];
-  let row = [], val = "", insideQuotes = false;
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
-  for (let c of text) {
-    if (c === '"') insideQuotes = !insideQuotes;
-    else if (c === "," && !insideQuotes) {
-      row.push(val); val = "";
-    }
-    else if (c === "\n" && !insideQuotes) {
-      row.push(val); rows.push(row);
-      row = []; val = "";
-    }
-    else val += c;
-  }
-  row.push(val);
-  rows.push(row);
-  return rows;
-}
+const galleryContainer = document.getElementById("gallery");
+const status = document.getElementById("status");
 
-fetch(CSV_URL)
-  .then(res => res.text())
-  .then(text => {
-    const data = parseCSV(text).slice(1);
-    const gallery = document.getElementById("gallery");
-    const status = document.getElementById("status");
+async function loadGallery(){
 
-    gallery.innerHTML = "";
-    status.style.display = "none";
+  const q = query(collection(db, "gallery"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
 
-    data.reverse().forEach((row, i) => {
-      const img = row[1]?.trim();
-      const caption = row[2]?.trim();
-      const approved = row[3]?.trim().toUpperCase();
+  galleryContainer.innerHTML = "";
+  status.style.display = "none";
 
-      if (!img || approved !== "YES") return;
+  snapshot.forEach((doc, i) => {
+    const data = doc.data();
 
-      const div = document.createElement("div");
-      div.className = "photo";
-      div.style.animationDelay = `${i * 0.05}s`;
+    const div = document.createElement("div");
+    div.className = "photo";
+    div.style.animationDelay = `${i * 0.05}s`;
 
-      div.innerHTML = `
-       <img src="${fixDriveLink(img)}" alt="Gallery image" loading="lazy">
+    div.innerHTML = `
+      <img src="${data.imageUrl}" loading="lazy">
+      ${data.caption ? `<div class="caption">${data.caption}</div>` : ""}
+    `;
 
-
-
-        ${caption ? `<div class="caption">${caption}</div>` : ""}
-      `;
-
-      gallery.appendChild(div);
-    });
-
-    if (!gallery.children.length) {
-      status.style.display = "block";
-      status.innerText = "No images approved yet.";
-    }
-  })
-  .catch(() => {
-    document.getElementById("status").innerText =
-      "Failed to load gallery.";
+    galleryContainer.appendChild(div);
   });
-</script>  
+
+  if(!galleryContainer.children.length){
+    status.style.display = "block";
+    status.innerText = "No images yet.";
+  }
+}
+
+loadGallery();
+
+</script>
 <script>
 /* ================= PAGE TRANSITION SCRIPT (ADDED ONLY) ================= */
 document.querySelectorAll('a[href]').forEach(link => {

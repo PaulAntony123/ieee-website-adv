@@ -233,6 +233,18 @@ body{
     gap:30px;
     align-items:start;   /* 🚨 IMPORTANT */
 }
+/* ===== HOMEPAGE GALLERY FLEX FIX ===== */
+#homeGallery{
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+#homeGallery .preview{
+    width: 320px;
+    max-width: 100%;
+}
 
 .preview{
     background:rgba(255,255,255,0.05);
@@ -591,7 +603,7 @@ body.page-exit{
     <h2>Upcoming Events</h2>
     <div class="event-grid">
     <div class="event-card">
-        <a href="href="events.html" target="_blank">
+        <a href="href=events.html">
             <img src="comingsoon.jpg" alt="comingsoon">
             <div class="event-info">
                 <h4>coming soon</h4>
@@ -800,3 +812,9 @@ loadHomeGallery();
 
 </body>
 </html>
+
+
+
+
+
+

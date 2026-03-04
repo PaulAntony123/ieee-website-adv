@@ -269,7 +269,7 @@ button:hover{
         <li>Team</li>
         <li>Reports</li>
         <li>Messages</li>
-        <li>logout</li>
+        <li id="logoutBtn">Logout</li>
     </ul>
 </div>
 
@@ -367,7 +367,10 @@ loadEvents();
 
 /* ================= ADD EVENT ================= */
 
-document.getElementById("addEvent").addEventListener("click", async ()=>{
+const addBtn = document.getElementById("addEvent");
+
+addBtn.addEventListener("click", async () => {
+
   console.log("Button clicked");
 
   const title = document.getElementById("title").value;
@@ -376,60 +379,66 @@ document.getElementById("addEvent").addEventListener("click", async ()=>{
   const registration = document.getElementById("registration").value;
   const file = document.getElementById("imageFile").files[0];
 
-  if(!title || !date){
+  if (!title || !date) {
     alert("Title and Date required");
     return;
   }
 
+  addBtn.disabled = true;
+  addBtn.innerText = "Uploading...";
+
   let imageURL = "";
 
-  if(file){
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", "ieee_events");
+  try {
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "ieee_events"); // Make sure this exists in Cloudinary
 
-  const response = await fetch(
-    "https://api.cloudinary.com/v1_1/dnbbyeel3/image/upload",
-    {
-      method: "POST",
-      body: formData
+      const response = await fetch(
+        "https://api.cloudinary.com/v1_1/dnbbyeel3/image/upload",
+        {
+          method: "POST",
+          body: formData
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error("Cloudinary error:", data);
+        alert("Image upload failed. Check upload preset.");
+        addBtn.disabled = false;
+        addBtn.innerText = "Add Event";
+        return;
+      }
+
+      imageURL = data.secure_url || "";
     }
-  );
 
-  const data = await response.json();
-  imageURL = data.secure_url;
-}
+    await addDoc(collection(db, "events"), {
+      title,
+      date,
+      description,
+      registration,
+      image: imageURL || "",
+      createdAt: new Date()
+    });
 
-  await addDoc(collection(db,"events"),{
-    title,
-    date,
-    description,
-    registration,
-    image: imageURL,
-    createdAt: new Date()
-  });
+    document.getElementById("title").value = "";
+    document.getElementById("date").value = "";
+    document.getElementById("description").value = "";
+    document.getElementById("registration").value = "";
+    document.getElementById("imageFile").value = "";
 
-  document.getElementById("title").value="";
-  document.getElementById("date").value="";
-  document.getElementById("description").value="";
-  document.getElementById("registration").value="";
-  document.getElementById("imageFile").value="";
+    loadEvents();
 
-  loadEvents();
-});
-import { signOut } from 
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  } catch (error) {
+    console.error("Error adding event:", error);
+  }
 
-/* 🚪 Logout */
-document.getElementById("logoutBtn")
-  .addEventListener("click", () => {
-    signOut(auth)
-      .then(() => {
-        window.location.href = "login.html";
-      })
-      .catch((error) => {
-        console.error("Logout Error:", error);
-      });
+  addBtn.disabled = false;
+  addBtn.innerText = "Add Event";
 });
 </script>
 

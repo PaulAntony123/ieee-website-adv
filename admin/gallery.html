@@ -121,6 +121,15 @@ body::after{
     gap:25px;
 }
 
+/* MOBILE GRID */
+
+@media (max-width:900px){
+
+.grid{
+    grid-template-columns:1fr;
+}
+
+}
 /* ================= GLASS CARDS ================= */
 
 .card{
@@ -220,6 +229,36 @@ button:hover{
 .delete-btn{
     background:#ff4d6d;
 }
+/* MOBILE SIDEBAR */
+
+@media (max-width:900px){
+
+body{
+    flex-direction:column;
+}
+
+.sidebar{
+    width:100%;
+    display:flex;
+    overflow-x:auto;
+    padding:15px;
+}
+
+.sidebar ul{
+    display:flex;
+    gap:10px;
+}
+
+.sidebar ul li{
+    white-space:nowrap;
+}
+
+.profile{
+    display:none;
+}
+
+}
+
 </style>
 </head>
 
@@ -227,18 +266,16 @@ button:hover{
 
 <div class="sidebar">
     <div class="profile">
-        <img src="https://visatieeesb-gray.vercel.app/paulantony.jpeg">
-        <h3>IEEE Admin</h3>
-        <span>Dashboard Manager</span>
-    </div>
+    <img id="adminPhoto" src="">
+    <h3 id="adminName">Admin</h3>
+    <span id="adminEmail">email@example.com</span>
+</div>
     <ul>
         <li onclick="window.location.href='dashboard.html'">Dashboard</li>
         <li onclick="window.location.href='event.html'">Events</li>
         <li onclick="window.location.href='gallery.html'">Gallery</li>
-        <li>Team</li>
-        <li>Reports</li>
-        <li>Messages</li>
-        <li>logout</li>
+        
+        <li id="logoutBtn">Logout</li>
     </ul>
 </div>
 
@@ -269,6 +306,8 @@ button:hover{
 <script type="module">
 
 import { auth, db } from "./firebase.js";
+import { onAuthStateChanged, signOut }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { 
   collection,
   addDoc,
@@ -306,8 +345,10 @@ async function loadGallery(){
   document.querySelectorAll(".delete-btn").forEach(btn=>{
     btn.addEventListener("click", async ()=>{
       const id = btn.getAttribute("data-id");
-      await deleteDoc(doc(db,"gallery",id));
-      loadGallery();
+      if(confirm("Delete this image?")){
+  await deleteDoc(doc(db,"gallery",id));
+  loadGallery();
+}
     });
   });
 }
@@ -332,14 +373,20 @@ document.getElementById("addImage")
     formData.append("upload_preset", "ieee_gallery");
 
     const response = await fetch(
-      "https://api.cloudinary.com/v1_1/dnbbyeel3/image/upload",
-      {
-        method:"POST",
-        body:formData
-      }
-    );
+  "https://api.cloudinary.com/v1_1/dnbbyeel3/image/upload",
+  {
+    method:"POST",
+    body:formData
+  }
+);
 
-    const data = await response.json();
+const data = await response.json();
+
+if(!response.ok){
+  console.error("Cloudinary error:", data);
+  alert("Image upload failed");
+  return;
+}
 
     await addDoc(collection(db,"gallery"),{
       imageUrl:data.secure_url,
@@ -352,8 +399,7 @@ document.getElementById("addImage")
 
     loadGallery();
 });
-import { signOut } from 
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
 
 /* 🚪 Logout */
 document.getElementById("logoutBtn")
@@ -365,6 +411,28 @@ document.getElementById("logoutBtn")
       .catch((error) => {
         console.error("Logout Error:", error);
       });
+});
+
+// ================= Auth Protection =================
+
+onAuthStateChanged(auth, (user) => {
+
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  // Admin Name
+  document.getElementById("adminName").innerText =
+      user.displayName || "IEEE Admin";
+
+  // Admin Email
+  document.getElementById("adminEmail").innerText =
+      user.email;
+
+  // Profile Photo (Cloudinary or default)
+  document.getElementById("adminPhoto").src =
+      user.photoURL || "https://i.imgur.com/2DhmtJ4.png";
 });
 </script>
 

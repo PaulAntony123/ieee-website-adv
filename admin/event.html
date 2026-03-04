@@ -9,83 +9,103 @@
 
 <style>
 *{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-  font-family:'Poppins',sans-serif;
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
 }
 
 body{
-    background:#070019;
+    min-height:100vh;
     display:flex;
+    background:#05000a;
     color:#e5e7eb;
-    overflow:hidden;   /* prevent whole page scroll */
+    overflow:hidden;
+    position:relative;
 }
 
-h1{
-  margin-bottom:30px;
-  color:#a855f7;
+/* ===== Ambient Glow Background ===== */
+
+body::before,
+body::after{
+    content:"";
+    position:fixed;
+    width:400px;
+    height:400px;
+    background:radial-gradient(circle, rgba(168,85,247,0.35), transparent 70%);
+    filter:blur(120px);
+    z-index:-1;
 }
 
-.form-box{
-  background:rgba(124,58,237,0.08);
-  backdrop-filter:blur(20px);
-  border:1px solid rgba(168,85,247,0.2);
-  padding:25px;
-  border-radius:20px;
-  margin-bottom:40px;
+body::before{
+    top:10%;
+    left:-150px;
 }
 
-.form-box h3{
-  margin-bottom:15px;
-  color:#a855f7;
+body::after{
+    bottom:10%;
+    right:-150px;
 }
 
-input, textarea{
-  width:100%;
-  padding:12px;
-  margin:10px 0;
-  border-radius:10px;
-  border:none;
-  outline:none;
-  background:rgba(255,255,255,0.08);
-  color:white;
-}
-
-button{
-  padding:12px 20px;
-  border:none;
-  border-radius:12px;
-  background:linear-gradient(90deg,#5b21b6,#7c3aed);
-  color:white;
-  cursor:pointer;
-  margin-top:10px;
-}
-
-.event-card{
-  background:rgba(124,58,237,0.08);
-  border:1px solid rgba(168,85,247,0.2);
-  border-radius:15px;
-  padding:15px;
-  margin-bottom:15px;
-}
-
-.event-card img{
-  width:100%;
-  max-height:200px;
-  object-fit:cover;
-  border-radius:10px;
-  margin-bottom:10px;
-}
-
-.delete-btn{
-  background:#ff4d6d;
-  margin-top:10px;
-}
 /* ================= SIDEBAR ================= */
+
+.sidebar{
+    width:260px;
+    padding:30px 25px;
+    background:rgba(255,255,255,0.04);
+    backdrop-filter:blur(20px);
+    border-right:1px solid rgba(168,85,247,0.15);
+}
+
+.profile{
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.profile img{
+    width:85px;
+    height:85px;
+    border-radius:50%;
+    margin-bottom:10px;
+    border:2px solid rgba(168,85,247,0.5);
+}
+
+.profile h3{
+    font-size:16px;
+    background:linear-gradient(90deg,#a855f7,#e879f9);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
+}
+
+.profile span{
+    font-size:12px;
+    opacity:0.6;
+}
+
+.sidebar ul{
+    list-style:none;
+}
+
+.sidebar ul li{
+    padding:12px 15px;
+    border-radius:12px;
+    margin-bottom:8px;
+    cursor:pointer;
+    transition:0.3s;
+    color:#c4b5fd;
+}
+
+.sidebar ul li:hover{
+    background:rgba(168,85,247,0.15);
+}
+
+
+/* ================= MAIN ================= */
+
 .main{
     flex:1;
     padding:40px;
+    overflow:hidden;
 }
 
 .topbar{
@@ -95,74 +115,140 @@ button{
     margin-bottom:40px;
 }
 
-.search{
-    background:rgba(124,58,237,0.08);
-    padding:10px 20px;
-    border-radius:30px;
-    border:1px solid rgba(168,85,247,0.2);
+.topbar h1{
+    font-size:26px;
+    background:linear-gradient(90deg,#a855f7,#e879f9);
+    -webkit-background-clip:text;
+    -webkit-text-fill-color:transparent;
 }
+
+.search{
+    padding:10px 20px;
+    border-radius:20px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(168,85,247,0.2);
+    color:#c4b5fd;
+}
+
+/* ================= GRID ================= */
 
 .grid{
     display:grid;
     grid-template-columns:400px 1fr;
     gap:25px;
-    height:calc(100vh - 120px);
+    height:calc(100vh - 140px);
 }
 
-/* LEFT CARD - STICKY */
+/* LEFT STICKY */
 .grid .card:first-child{
     position:sticky;
     top:0;
     height:fit-content;
 }
 
-/* RIGHT CARD - SCROLLABLE */
+/* RIGHT SCROLL */
 .grid .card:last-child{
     overflow-y:auto;
     padding-right:10px;
 }
 
+/* ================= GLASS CARDS ================= */
+
 .card{
-    background:rgba(124,58,237,0.08);
-    backdrop-filter:blur(20px);
-    border:1px solid rgba(168,85,247,0.2);
-    border-radius:20px;
     padding:25px;
-    box-shadow:0 0 30px rgba(124,58,237,0.3);
-}
-/* ================= SIDEBAR ================= */
-
-.sidebar{
-    width:260px;
-    height:100vh;
-    padding:30px 20px;
-    background:rgba(124,58,237,0.08);
-    backdrop-filter:blur(20px);
-    border-right:1px solid rgba(168,85,247,0.2);
-    box-shadow:0 0 40px rgba(124,58,237,0.3);
+    border-radius:24px;
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(25px);
+    border:1px solid rgba(168,85,247,0.15);
+    transition:0.3s ease;
+    position:relative;
+    overflow:hidden;
 }
 
-.sidebar h2{
-    margin-bottom:40px;
-    color:#a855f7;
-    font-weight:600;
+.card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 0 40px rgba(168,85,247,0.2);
 }
 
-.sidebar ul{
-    list-style:none;
+/* Shine Effect */
+.card::after{
+    content:"";
+    position:absolute;
+    top:0;
+    left:-100%;
+    width:60%;
+    height:100%;
+    background:linear-gradient(
+        120deg,
+        transparent,
+        rgba(255,255,255,0.25),
+        transparent
+    );
+    transform:skewX(-20deg);
 }
 
-.sidebar ul li{
-    padding:12px 15px;
-    margin:10px 0;
+.card:hover::after{
+    animation:shine 0.8s ease;
+}
+
+@keyframes shine{
+    to{ left:150%; }
+}
+
+/* ================= FORM ================= */
+
+input, textarea{
+    width:100%;
+    padding:12px;
+    margin:12px 0;
     border-radius:12px;
+    border:1px solid rgba(168,85,247,0.2);
+    background:rgba(255,255,255,0.06);
+    color:white;
+    outline:none;
+}
+
+button{
+    padding:12px 20px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(90deg,#5b21b6,#7c3aed);
+    color:white;
     cursor:pointer;
     transition:0.3s;
 }
 
-.sidebar ul li:hover{
-    background:rgba(168,85,247,0.2);
-    box-shadow:0 0 20px rgba(124,58,237,0.5);
+button:hover{
+    transform:translateY(-3px);
+    box-shadow:0 0 20px rgba(168,85,247,0.4);
+}
+
+/* ================= EVENT CARD ================= */
+
+.event-card{
+    padding:15px;
+    border-radius:18px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(168,85,247,0.15);
+    margin-bottom:15px;
+    transition:0.3s;
+}
+
+.event-card:hover{
+    transform:translateY(-4px);
+    box-shadow:0 0 25px rgba(168,85,247,0.2);
+}
+
+.event-card img{
+    width:100%;
+    max-height:200px;
+    object-fit:cover;
+    border-radius:12px;
+    margin-bottom:10px;
+}
+
+.delete-btn{
+    background:#ff4d6d;
 }
 
 </style>
@@ -171,17 +257,19 @@ button{
 <body>
 
 <div class="sidebar">
-    <h2>IEEE SB</h2>
+    <div class="profile">
+        <img src="https://visatieeesb-gray.vercel.app/paulantony.jpeg">
+        <h3>IEEE Admin</h3>
+        <span>Dashboard Manager</span>
+    </div>
     <ul>
-        <li onclick="window.location.href='dashboard.html'">📊 Dashboard</li>
-        <li onclick="window.location.href='event.html'">📅 Events</li>
-        <li onclick="window.location.href='gallery.html'">🖼️ Gallery</li>
-        <li>👥 Team</li>
-        <li>📝 Reports</li>
-        <li>📩 Messages</li>
-        <li>📂 Resources</li>
-        <li>⚙️ Settings</li>
-        <li id="logoutBtn">🚪 Logout</li>
+        <li onclick="window.location.href='dashboard.html'">Dashboard</li>
+        <li onclick="window.location.href='event.html'">Events</li>
+        <li onclick="window.location.href='gallery.html'">Gallery</li>
+        <li>Team</li>
+        <li>Reports</li>
+        <li>Messages</li>
+        <li>logout</li>
     </ul>
 </div>
 

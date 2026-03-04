@@ -8,6 +8,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 
 <style>
+/* ================= GLOBAL ================= */
+
 *{
     margin:0;
     padding:0;
@@ -20,11 +22,12 @@ body{
     display:flex;
     background:#05000a;
     color:#e5e7eb;
-    overflow:hidden;
+    overflow-x:hidden;
     position:relative;
 }
 
-/* ===== Ambient Glow Background ===== */
+
+/* ================= BACKGROUND GLOW ================= */
 
 body::before,
 body::after{
@@ -46,6 +49,7 @@ body::after{
     bottom:10%;
     right:-150px;
 }
+
 
 /* ================= SIDEBAR ================= */
 
@@ -100,12 +104,12 @@ body::after{
 }
 
 
-/* ================= MAIN ================= */
+/* ================= MAIN CONTENT ================= */
 
 .main{
     flex:1;
     padding:40px;
-    overflow:hidden;
+    overflow-y:auto;
 }
 
 .topbar{
@@ -130,7 +134,8 @@ body::after{
     color:#c4b5fd;
 }
 
-/* ================= GRID ================= */
+
+/* ================= GRID LAYOUT ================= */
 
 .grid{
     display:grid;
@@ -139,18 +144,21 @@ body::after{
     height:calc(100vh - 140px);
 }
 
-/* LEFT STICKY */
+/* sticky form */
+
 .grid .card:first-child{
     position:sticky;
     top:0;
     height:fit-content;
 }
 
-/* RIGHT SCROLL */
+/* scroll events */
+
 .grid .card:last-child{
     overflow-y:auto;
     padding-right:10px;
 }
+
 
 /* ================= GLASS CARDS ================= */
 
@@ -170,7 +178,8 @@ body::after{
     box-shadow:0 0 40px rgba(168,85,247,0.2);
 }
 
-/* Shine Effect */
+/* shine animation */
+
 .card::after{
     content:"";
     position:absolute;
@@ -194,6 +203,7 @@ body::after{
 @keyframes shine{
     to{ left:150%; }
 }
+
 
 /* ================= FORM ================= */
 
@@ -223,6 +233,7 @@ button:hover{
     box-shadow:0 0 20px rgba(168,85,247,0.4);
 }
 
+
 /* ================= EVENT CARD ================= */
 
 .event-card{
@@ -251,33 +262,158 @@ button:hover{
     background:#ff4d6d;
 }
 
+
+/* ================= HAMBURGER MENU ================= */
+
+.menu-btn{
+    display:none;
+    position:fixed;
+    top:18px;
+    right:18px;
+    width:45px;
+    height:45px;
+    border-radius:12px;
+    background:#5b21b6;
+    border:none;
+    color:white;
+    font-size:22px;
+    cursor:pointer;
+    z-index:1100;
+
+    align-items:center;
+    justify-content:center;
+
+    box-shadow:0 0 15px rgba(168,85,247,0.5);
+}
+
+.menu-overlay{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.6);
+    backdrop-filter:blur(6px);
+    opacity:0;
+    pointer-events:none;
+    transition:0.3s;
+    z-index:999;
+}
+
+.menu-overlay.active{
+    opacity:1;
+    pointer-events:auto;
+}
+
+
+/* ================= MOBILE ================= */
+
+@media (max-width:900px){
+
+body{
+    flex-direction:column;
+}
+
+.menu-btn{
+    display:flex;
+}
+
+/* sidebar drawer */
+
+.sidebar{
+    position:fixed;
+    top:0;
+    left:-260px;
+    width:260px;
+    height:100vh;
+    background:#0b0015;
+    backdrop-filter:none;
+    border-right:1px solid rgba(168,85,247,0.25);
+    z-index:1000;
+    transition:0.3s ease;
+}
+
+.sidebar.active{
+    left:0;
+}
+
+.profile{
+    display:none;
+}
+
+.sidebar ul{
+    display:block;
+}
+
+.sidebar ul li{
+    margin-bottom:12px;
+}
+
+.main{
+    padding:80px 20px 20px 20px;
+}
+
+.grid{
+    grid-template-columns:1fr;
+    height:auto;
+}
+
+.grid .card:first-child{
+    position:relative;
+}
+
+}
+
+
+/* ================= SMALL MOBILE ================= */
+
+@media (max-width:600px){
+
+button{
+    width:100%;
+}
+
+input, textarea{
+    padding:14px;
+}
+
+}
+.event-card h4{
+    margin-bottom:6px;
+    font-size:16px;
+    color:#e9d5ff;
+}
+
+.event-card p{
+    font-size:14px;
+    opacity:0.8;
+    margin-bottom:6px;
+}
 </style>
 </head>
 
 <body>
-
+<div class="menu-overlay" id="menuOverlay"></div>
 <div class="sidebar">
     <div class="profile">
-        <img src="https://visatieeesb-gray.vercel.app/paulantony.jpeg">
-        <h3>IEEE Admin</h3>
-        <span>Dashboard Manager</span>
-    </div>
+    <img id="adminPhoto" src="https://visatieeesb-gray.vercel.app/paulantony.jpeg">
+    <h3 id="adminName">IEEE Admin</h3>
+    <span id="adminEmail">Event Manager</span>
+</div>
     <ul>
         <li onclick="window.location.href='dashboard.html'">Dashboard</li>
         <li onclick="window.location.href='event.html'">Events</li>
         <li onclick="window.location.href='gallery.html'">Gallery</li>
-        <li>Team</li>
-        <li>Reports</li>
-        <li>Messages</li>
+        
         <li id="logoutBtn">Logout</li>
     </ul>
 </div>
 
 <div class="main">
-
+<button class="menu-btn" id="menuBtn">☰</button>
     <div class="topbar">
         <h1>Event Management</h1>
-        <div class="search">📅 Manage Events</div>
+        
     </div>
 
     <div class="grid">
@@ -307,12 +443,11 @@ button:hover{
 import { auth, db } from "./firebase.js";
 
 import { 
-  getAuth,
-  onAuthStateChanged
+  onAuthStateChanged,
+  signOut
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
-import { 
-  getFirestore, 
+import {  
   collection, 
   addDoc, 
   getDocs, 
@@ -320,22 +455,63 @@ import {
   doc 
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+// ================= Auth Protection =================
 
-
-/* 🔒 Protect Page */
 onAuthStateChanged(auth, (user) => {
+
   if (!user) {
     window.location.href = "login.html";
+    return;
   }
+
+  // Admin Name
+  document.getElementById("adminName").innerText =
+      user.displayName || "IEEE Admin";
+
+  // Admin Email
+  document.getElementById("adminEmail").innerText =
+      user.email;
+
+  // Profile Photo (Cloudinary or default)
+  document.getElementById("adminPhoto").src =
+      user.photoURL || "https://i.imgur.com/2DhmtJ4.png";
 });
 
-const eventList = document.getElementById("eventList");
+// ================= Logout =================
 
+document.addEventListener("DOMContentLoaded", () => {
+
+  const logoutBtn = document.getElementById("logoutBtn");
+
+  if (logoutBtn) {
+
+    logoutBtn.onclick = async () => {
+
+      try {
+
+        console.log("Logout clicked");
+
+        await signOut(auth);
+
+        window.location.href = "login.html";
+
+      } catch (error) {
+
+        console.error("Logout failed:", error);
+
+      }
+
+    };
+
+  }
+
+});
+const eventList = document.getElementById("eventList");
 /* ================= LOAD EVENTS ================= */
 
 async function loadEvents(){
   eventList.innerHTML = "";
-  const snapshot = await getDocs(collection(db,"events"));
+  const snapshot = await getDocs(collection(db, "events"));
 
   snapshot.forEach(docSnap=>{
     const data = docSnap.data();
@@ -357,7 +533,9 @@ async function loadEvents(){
   document.querySelectorAll(".delete-btn").forEach(btn=>{
     btn.addEventListener("click", async ()=>{
       const id = btn.getAttribute("data-id");
-      await deleteDoc(doc(db,"events",id));
+      if(confirm("Delete this event?")){
+    await deleteDoc(doc(db,"events",id));
+}
       loadEvents();
     });
   });
@@ -441,6 +619,32 @@ addBtn.addEventListener("click", async () => {
   addBtn.innerText = "Add Event";
 });
 </script>
+<script>
+// Hamburger Toggle
 
+const menuBtn = document.getElementById("menuBtn");
+const sidebar = document.querySelector(".sidebar");
+const overlay = document.getElementById("menuOverlay");
+
+menuBtn.addEventListener("click", () => {
+    sidebar.classList.toggle("active");
+    overlay.classList.toggle("active");
+});
+
+/* close menu when clicking outside */
+
+overlay.addEventListener("click", () => {
+    sidebar.classList.remove("active");
+    overlay.classList.remove("active");
+});
+// close menu when clicking menu item
+
+document.querySelectorAll(".sidebar ul li:not(#logoutBtn)").forEach(item=>{
+  item.addEventListener("click",()=>{
+    sidebar.classList.remove("active");
+    overlay.classList.remove("active");
+  });
+});
+</script>
 </body>
 </html>

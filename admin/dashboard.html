@@ -240,24 +240,103 @@ body::after{
     grid-template-columns:1fr 1fr;
     gap:20px;
 }
+/* ================= MOBILE RESPONSIVE ================= */
+
+@media (max-width:900px){
+
+body{
+    flex-direction:column;
+}
+
+/* Sidebar becomes top navigation */
+
+.sidebar{
+    width:100%;
+    padding:15px;
+}
+
+.profile{
+    display:none;
+}
+
+.sidebar ul{
+    display:flex;
+    overflow-x:auto;
+    gap:10px;
+}
+
+.sidebar ul li{
+    white-space:nowrap;
+    margin-bottom:0;
+}
+
+/* Main padding smaller */
+
+.main{
+    padding:20px;
+}
+
+/* Topbar stack */
+
+.topbar{
+    flex-direction:column;
+    gap:10px;
+    align-items:flex-start;
+}
+
+.search{
+    width:100%;
+}
+
+/* Grid layouts collapse */
+
+.grid-2{
+    grid-template-columns:1fr;
+}
+
+.grid-2-bottom{
+    grid-template-columns:1fr;
+}
+
+}
+
+/* Small phone optimization */
+
+@media (max-width:600px){
+
+.summary{
+    grid-template-columns:1fr 1fr;
+}
+
+.summary-card{
+    padding:18px;
+}
+
+.summary-card h2{
+    font-size:22px;
+}
+
+.panel{
+    padding:18px;
+}
+
+}
 </style>
 </head>
 
 <body>
 <div class="sidebar">
     <div class="profile">
-        <img src="https://visatieeesb-gray.vercel.app/paulantony.jpeg">
-        <h3>IEEE Admin</h3>
-        <span>Dashboard Manager</span>
-    </div>
+    <img id="adminPhoto" src="">
+    <h3 id="adminName">Admin</h3>
+    <span id="adminEmail">email@example.com</span>
+</div>
     <ul>
         <li onclick="window.location.href='dashboard.html'">Dashboard</li>
         <li onclick="window.location.href='event.html'">Events</li>
         <li onclick="window.location.href='gallery.html'">Gallery</li>
-        <li>Team</li>
-        <li>Reports</li>
-        <li>Messages</li>
-        <li>logout</li>
+        
+        <li id="logoutBtn">Logout</li>
     </ul>
 </div>
 
@@ -265,7 +344,7 @@ body::after{
 
     <div class="topbar">
         <input class="search" placeholder="Search...">
-        <div class="date-box">February 26, 2026</div>
+        <div class="date-box" id="currentDate"></div>
     </div>
 
     <div class="summary">
@@ -339,7 +418,23 @@ const db = getFirestore(app);
 // ================= Auth Protection =================
 
 onAuthStateChanged(auth, (user) => {
-  if (!user) window.location.href = "login.html";
+
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+
+  // Admin Name
+  document.getElementById("adminName").innerText =
+      user.displayName || "IEEE Admin";
+
+  // Admin Email
+  document.getElementById("adminEmail").innerText =
+      user.email;
+
+  // Profile Photo (Cloudinary or default)
+  document.getElementById("adminPhoto").src =
+      user.photoURL || "https://i.imgur.com/2DhmtJ4.png";
 });
 
 // ================= Logout =================
@@ -408,9 +503,29 @@ onSnapshot(doc(db, "stats", "main"), (docSnap) => {
 });
 
 </script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
 
 </script>
 
+<script>
+function updateDate() {
+
+  const today = new Date();
+
+  const options = {
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  };
+
+  const formattedDate = today.toLocaleDateString("en-US", options);
+
+  document.getElementById("currentDate").innerText = formattedDate;
+}
+
+updateDate();
+</script>
 </body>
 </html>

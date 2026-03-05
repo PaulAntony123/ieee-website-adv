@@ -379,10 +379,14 @@ body{
 
     <div class="grid-2-bottom">
         <div class="panel">
-            <div class="panel-title">Messages</div>
-            <p>Victoria: New event uploaded</p>
-            <p>Joseph: Gallery updated</p>
-        </div>
+  <div class="panel-title">Messages</div>
+
+  <div id="messageList"></div>
+
+  <input id="msgInput" placeholder="Write message...">
+  <button id="sendMsg">Send</button>
+
+</div>
         <div class="panel">
             <div class="panel-title">Members</div>
             <p>Total Users: 184</p>
@@ -397,8 +401,14 @@ body{
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, onAuthStateChanged, signOut }
 from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getFirestore, doc, onSnapshot }
-from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import { 
+  getFirestore,
+  doc,
+  collection,
+  addDoc,
+  onSnapshot,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // ================= Firebase Init =================
 
@@ -415,6 +425,48 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+
+const messageList = document.getElementById("messageList");
+
+/* LIVE MESSAGES */
+
+onSnapshot(collection(db,"messages"), (snapshot)=>{
+
+  messageList.innerHTML="";
+
+  snapshot.forEach(docSnap=>{
+
+    const data = docSnap.data();
+
+    const p = document.createElement("p");
+
+    p.innerText = `${data.name}: ${data.message}`;
+
+    messageList.appendChild(p);
+
+  });
+
+});
+
+
+/* SEND MESSAGE */
+
+document.getElementById("sendMsg")
+.addEventListener("click", async ()=>{
+
+  const msg = document.getElementById("msgInput").value;
+
+  if(!msg) return;
+
+  await addDoc(collection(db,"messages"),{
+    name: "Admin",
+    message: msg,
+    time: serverTimestamp()
+  });
+
+  document.getElementById("msgInput").value="";
+
+});
 // ================= Auth Protection =================
 
 onAuthStateChanged(auth, (user) => {
